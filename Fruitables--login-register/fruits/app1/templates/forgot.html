@@ -1,0 +1,51 @@
+{% load static %}
+{% load rest_framework %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Forgot</title>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <meta content="forgot Form Template" name="keywords">
+        <meta content="forgot Form Template" name="description">
+
+        <!-- Stylesheet -->
+        <link rel="stylesheet" href="{% static 'forgot.css' %}" />
+
+    </head>
+    <body>
+        <div class="wrapper forgot-3">
+            <div class="container">
+                <div class="col-left">
+                    <div class="forgot-text">
+                        <h2><img src="{% static 'img\f.png'%}" alt="Logo"></h2>
+                    </div>
+                </div>
+                <div class="col-right">
+                    <div class="forgot-form">
+                        
+                        <h2>Forgot</h2>
+                      
+                        <form action="{% url 'forgot' %}" method="post">
+                            {% csrf_token %}
+                            <div class="messages">
+                                <ul>
+                                  {% for message in messages %}
+                                  <li{% if message.tags %} class="{{ message.tags }}" style=" margin-left:50px; color:green;" {% endif %}>{{message}}</li>
+                                    {% endfor %}
+                                </ul>
+                              </div>
+    
+                            <p>
+                                <input class="email" type="email" placeholder="Enter Email" id="email" name="email" required/>
+                            </p>
+                                <input class="btn" type="submit"  value="Submit" />
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

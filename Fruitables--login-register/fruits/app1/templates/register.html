@@ -1,0 +1,80 @@
+{% load static %}
+{% load rest_framework %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Registration</title>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <meta content="register Form Template" name="keywords">
+        <meta content="register Form Template" name="description">
+
+
+        <!-- Stylesheet -->
+        <link rel="stylesheet" href="{% static 'register.css' %}" />
+    </head>
+    <body>
+        <div class="wrapper reg-3">
+            <div class="container">
+                <div class="col-left">
+                    <div class="login-text">
+                        <h2><img src="{% static 'img\f.png'%}" alt="Logo"></h2>
+                    </div>
+                </div>
+                <div class="col-right">
+                    <div class="reg-form">
+                        <h2>Registration</h2>        
+                        {% if messages %}
+                        <div class="messages">
+                            <ul>
+                                {% for message in messages %}
+                                <li{% if message.tags %} class="{{ message.tags }}" style="margin-left:50px; color:green;" {% endif %}>{{message }}</li>
+                                    {% endfor %}0
+                            </ul>
+                        </div>
+                        {% endif %}
+                
+                        <form method="post" >
+                            {% csrf_token %}
+
+                            <p>
+                                <label> Username </label>
+                                <input type="text" placeholder="Enter Username" id="username"name="username" required>
+                            </p>
+                            <p>
+                                <label> Fullname </label>
+                                <input type="text" placeholder="Enter Fullname" id="fullname" name="fullname" required>
+                            </p>
+                            <p>
+                                <label> Email </label>
+                                <input class="email" type="text" placeholder="Enter email" id="email" name="email" required/>
+                            </p>
+                            <p>
+                                <label> Phone </label>
+                                <input type="Phone" placeholder="Enter Phone Number" id="phone_number" name="phone_number" required>
+                            </p>
+                            <p>
+                                <label>password</label>
+                                <input type="Password" value="Password In" id="password" name="password" required/>
+                            </p>
+                            <p>
+                                <label> confirm password</label>
+                                <input class="password" type="Password" value="Password In" id="confirmpassword" name="confirmpassword" required />
+                            </p>
+                            <p>
+                                <input class="btn" type="submit" value="Sing In" />
+
+                            </p>
+
+                            <p>
+                                <p>Already  account?<a href="/">Login here</a></p>
+                                <a href=""></a>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

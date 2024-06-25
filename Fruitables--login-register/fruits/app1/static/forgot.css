@@ -1,0 +1,220 @@
+/* * * * * General CSS * * * * */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #666666;
+    background-image: url(https://img.freepik.com/free-photo/supermarket-banner-concept-with-ingredients_23-2149421178.jpg?t=st=1717652800~exp=1717656400~hmac=2f1b74767a30af3ad9e0066174a4c2f238763b81dc9dd9bd7264a2e4965d8b41&w=1380);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.clearfix::after {
+    content: '';
+    clear: both;
+    display: table;
+}
+
+.wrapper {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1140px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    display: flex;
+    background: #ffffffdb;
+    box-shadow: 0 0 5px #999999;
+    border-radius: 12px;
+}
+
+div.credit {
+    position: relative;
+    margin: 25px auto 0 auto;
+    width: 100%;
+    text-align: center;
+    color: #666666;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+div.credit a {
+    color: #222222;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+
+
+/* * * * * forgot CSS * * * * */
+
+.container.forgot-3 {
+    box-shadow: 0 0 15px rgba(0, 0, 0, .1);
+}
+
+.forgot-3 .col-left,
+.forgot-3 .col-right {
+    width: 55%;
+    padding: 75px 30px;
+    display: flex;
+}
+
+.forgot-3 .col-left {
+    width: 45%;
+    background: #4caf50ab;
+    -webkit-clip-path: polygon(98% 17%, 100% 34%, 98% 51%, 100% 68%, 98% 84%, 100% 100%, 0 100%, 0 0, 100% 0);
+    clip-path: polygon(98% 17%, 100% 34%, 98% 51%, 100% 68%, 98% 84%, 100% 100%, 0 100%, 0 0, 100% 0);
+    border-radius: 12px;
+
+}
+
+@media(max-width: 575.98px) {
+    .forgot-3 .container {
+        flex-direction: column;
+        box-shadow: none;
+    }
+    
+    .forgot-3 .col-left,
+    .forgot-3 .col-right {
+        width: 100%;
+        margin: 0;
+        padding: 30px;
+        -webkit-clip-path: none;
+        clip-path: none;
+    }
+}
+
+.forgot-3 .forgot-text {
+    position: relative;
+    width: 100%;
+    color: #ffffff;
+    text-align: center;
+}
+
+.forgot-3 h2 {
+    margin: 0 0 15px 0;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.forgot-3 h2 img {
+    width: 120px;
+    padding-top: 0px;
+}
+
+.forgot-3 p {
+    margin: 0 0 20px 0;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 22px;
+}
+
+.forgot-3 .btn {
+    display: inline-block;
+    padding: 7px 20px;
+    font-size: 16px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    border-radius: 5px;
+    color: #ffffff;
+    outline: none;
+    border: 1px solid #ffffff;
+    transition: .3s;
+    -webkit-transition: .3s;
+}
+
+.forgot-3 .btn:hover {
+    color: #4CAF50;
+    background: #ffffff;
+}
+
+.forgot-3 .forgot-form {
+    position: relative;
+    width: 100%;
+    color: #666666;
+}
+
+.forgot-3 .forgot-form p:last-child {
+    margin: 0;
+}
+
+.forgot-3 .forgot-form p a {
+    color: #4CAF50;
+    font-size: 17px;
+    text-decoration: none;
+}
+
+.forgot-3 .forgot-form p:last-child a:last-child {
+    float: right;
+}
+
+.forgot-3 .forgot-form label {
+    display: block;
+    width: 100%;
+    margin-bottom: 12px;
+    letter-spacing: .5px;
+}
+
+.forgot-3 .forgot-form p:last-child label {
+    width: 60%;
+    float: left;
+}
+
+.forgot-3 .forgot-form label span {
+    color: #ff574e;
+    padding-left: 2px;
+}
+
+.forgot-3 .forgot-form input {
+    display: block;
+    width: 100%;
+    height: 40px;
+    padding: 0 10px;
+    font-size: 16px;
+    letter-spacing: 1px;
+    outline: none;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+}
+
+.forgot-3 .forgot-form input:focus {
+    border-color: #ff574e;
+}
+
+.forgot-3 .forgot-form input.btn {
+    color: #ffffff;
+    background: #4CAF50;
+    border-color: #4CAF50;
+    outline: none;
+    cursor: pointer;
+}
+
+.forgot-3 .forgot-form input.btn:hover {
+    color: #4CAF50;
+    background: #ffffff;
+}
+
