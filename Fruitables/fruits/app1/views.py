@@ -86,6 +86,8 @@ class IndexView(generics.CreateAPIView):
 
             fruits = products.filter(product_category=2)
             veg = products.filter(product_category=1)
+            
+            singal_fruit = Product.objects.filter(product_category=CategoryChoices.FRUITS)[:4]
 
             return render(
                 request,
@@ -94,6 +96,7 @@ class IndexView(generics.CreateAPIView):
                     "all_product": products,
                     "veg": veg,
                     "fruits": fruits,
+                    "singal_fruit":singal_fruit,
                 },
             )
 
