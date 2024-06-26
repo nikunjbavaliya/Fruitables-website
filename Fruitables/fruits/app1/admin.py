@@ -28,6 +28,8 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ("product_name",)
 
 
+
+
 admin.site.register(Product, ProductAdmin)
 
 
