@@ -23,8 +23,11 @@ class ProductAdmin(admin.ModelAdmin):
         "product_details",
         "product_id",
         "product_category",
+        "product_description"
     )
     search_fields = ("product_name",)
+
+
 
 
 admin.site.register(Product, ProductAdmin)

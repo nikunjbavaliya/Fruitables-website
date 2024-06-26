@@ -28,6 +28,7 @@ class Product(models.Model):
     product_img = models.ImageField(upload_to="image", default=None)
     product_details = models.CharField(max_length=500)
     product_id = models.CharField(primary_key=True, max_length=5)
+    product_description = models.TextField(max_length=500) 
     product_category = models.IntegerField(
         choices=CategoryChoices.choices, default=CategoryChoices.ALL
     )
