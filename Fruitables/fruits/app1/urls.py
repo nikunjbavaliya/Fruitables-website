@@ -13,7 +13,7 @@ from .views import (
     CartView,
     RemoveFromCartView,
     CheckoutView,
-)
+)   
 
 from django.conf import settings
 from django.conf.urls.static import static

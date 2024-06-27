@@ -49,6 +49,9 @@ class Cart(models.Model):
     person = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     product_quantity = models.PositiveIntegerField(default=1)
+ 
+    def total_price(self):
+        return self.product_quantity * self.product.product_price
 
 
 class Checkout(models.Model):
@@ -70,3 +73,14 @@ class Checkout(models.Model):
 
     def __str__(self):
         return f"Checkout - {self.fullname}"
+
+class Reply(models.Model):
+    name = models.CharField(max_length=50)
+    email = models.EmailField()
+    review = models.TextField(max_length=500)
+    rating = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    product = models.ForeignKey(Product, related_name="replies", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.name}"
