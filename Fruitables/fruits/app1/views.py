@@ -13,8 +13,10 @@ from .serializers import (
     ContactSerializer,
     ProductSerializer,
     CheckoutSerializer,
+    ReplySerializer,
+    CartItemSerializer,
 )
-from .models import Product, CategoryChoices, Cart, User
+from .models import Product, CategoryChoices, Cart, User,Reply
 from typing import Union
 from rest_framework.request import Request
 from django.http.request import HttpRequest
@@ -68,37 +70,42 @@ class IndexView(generics.CreateAPIView):
     template_name = "index.html"
 
     def get(self, request: Union[Request, HttpRequest]) -> Union[render, redirect]:
-            if "username" not in request.session:
-                return redirect("login")
+        if "username" not in request.session:
+            return redirect("login")
 
-            query = request.GET.get('q')
-            min_price = request.GET.get('min_price')
-            max_price = request.GET.get('max_price')
+        query = request.GET.get("q")
+        min_price = request.GET.get("min_price")
+        max_price = request.GET.get("max_price")
+        
+        reply = Reply.objects.all()         
 
-            products = Product.objects.all()
+        products = Product.objects.all()
 
-            if query:
-                products = products.filter(product_name__icontains=query)
-            if min_price:
-                products = products.filter(product_price__gte=min_price)
-            if max_price:
-                products = products.filter(product_price__lte=max_price)
+        if query:
+            products = products.filter(product_name__icontains=query)
+        if min_price:
+            products = products.filter(product_price__gte=min_price)
+        if max_price:
+            products = products.filter(product_price__lte=max_price)
 
-            fruits = products.filter(product_category=2)
-            veg = products.filter(product_category=1)
-            
-            singal_fruit = Product.objects.filter(product_category=CategoryChoices.FRUITS)[:4]
+        fruits = products.filter(product_category=2)
+        veg = products.filter(product_category=1)
 
-            return render(
-                request,
-                self.template_name,
-                context={
-                    "all_product": products,
-                    "veg": veg,
-                    "fruits": fruits,
-                    "singal_fruit":singal_fruit,
-                },
-            )
+        singal_fruit = Product.objects.filter(product_category=CategoryChoices.FRUITS)[
+            :4
+        ]
+
+        return render(
+            request,
+            self.template_name,
+            context={
+                "all_product": products,
+                "veg": veg,
+                "fruits": fruits,
+                "singal_fruit": singal_fruit,
+                "reply":reply,
+            },
+        )
 
 
 class ForgotView(generics.CreateAPIView):
@@ -215,7 +222,7 @@ class ShopView(generics.CreateAPIView):
             return redirect("index")
 
         selected_category = request.POST.get("Categories-1", None)
-        products = Product.objects.all()  
+        products = Product.objects.all()
 
         if selected_category:
             if selected_category == "Organic":
@@ -267,41 +274,48 @@ class ShopView(generics.CreateAPIView):
                 "selected_category": selected_category,
             },
         )
-    
+
+
 class AddToCartView(LoginRequiredMixin, View):
     def post(self, request, product_id):
         user = User.objects.get(username=request.session["username"])
         product = get_object_or_404(Product, product_id=product_id)
-        
+
         cart_item, created = Cart.objects.get_or_create(person=user, product=product)
-        
+
         if not created:
             cart_item.product_quantity += 1
             cart_item.save()
-        
-        return redirect('cart')
+
+        return redirect("cart")
+
 
 class CartView(LoginRequiredMixin, View):
-    template_name = 'cart.html'
-    
+    template_name = "cart.html"
+
     def get(self, request):
         user = User.objects.get(username=request.session["username"])
         cart_items = Cart.objects.filter(person=user)
-        
+
         cart_subtotal = 0
         for item in cart_items:
             item.total_price = item.product.product_price * item.product_quantity
             cart_subtotal += item.total_price
-        
-        shipping_cost = 30 
+
+        shipping_cost = 30
         cart_total = cart_subtotal + shipping_cost
 
-        return render(request, self.template_name, {
-            'cart_items': cart_items,
-            'cart_subtotal': cart_subtotal,
-            'shipping_cost': shipping_cost,
-            'cart_total': cart_total,
-        })
+        return render(
+            request,
+            self.template_name,
+            {
+                "cart_items": cart_items,
+                "cart_subtotal": cart_subtotal,
+                "shipping_cost": shipping_cost,
+                "cart_total": cart_total,
+            },
+        )
+
 
 class RemoveFromCartView(LoginRequiredMixin, View):
     def post(self, request, product_id):
@@ -309,9 +323,9 @@ class RemoveFromCartView(LoginRequiredMixin, View):
         product = get_object_or_404(Product, product_id=product_id)
         cart_item = get_object_or_404(Cart, person=user, product=product)
         cart_item.delete()
-        
-        return redirect('cart')
-    
+
+        return redirect("cart")
+
 
 class ProdcutdetailView(generics.CreateAPIView):
     renderer_classes = [TemplateHTMLRenderer]
@@ -324,18 +338,39 @@ class ProdcutdetailView(generics.CreateAPIView):
         product = Product.objects.filter(product_id=product_id).first()
         if not product:
             return redirect("shop")
+        veg = Product.objects.filter(product_category=CategoryChoices.VEGETABLES)
+        singal_fruit = Product.objects.filter(product_category=CategoryChoices.FRUITS)[
+            7:
+        ]
+        
+        reply = Reply.objects.all()         
+        fruits = Product.objects.filter(product_category=CategoryChoices.FRUITS)
+        veg = Product.objects.filter(product_category=CategoryChoices.VEGETABLES)
+        min_price = request.POST.get("min_price", 0)
+        max_price = request.POST.get("max_price", 500)
 
-        return render(request, "shop-detail.html", {"product_details": product})
+        if min_price or max_price:
+            fruits = fruits.filter(
+                product_price__gte=min_price, product_price__lte=max_price
+            )
+            veg = veg.filter(product_price__gte=min_price, product_price__lte=max_price)
 
-    # def post(self, request, product_id):
-    #     if "username" not in request.session:
-    #         return redirect("login")
+        fruit_stock_counts = fruits.values("product_name").annotate(
+            total_stock=Sum("product_quantity")
+        )
 
-    #     product = Product.objects.filter(product_id=1)
-    #     if not product:
-    #         return redirect("shop")
+        return render(
+            request,
+            "shop-detail.html",
+            {"product_details": product, "veg": veg, "singal_fruit": singal_fruit, "fruit_stock_counts":fruit_stock_counts, "reply":reply},
+        )
 
-    #     return redirect("product", product_id=product_id)
+    def post(self, request, *args, **kwargs):
+        serializer = ReplySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return redirect('index')  
+        return render(request, self.template_name, {'serializer': serializer})
 
 
 class ContactView(generics.CreateAPIView):
@@ -357,24 +392,67 @@ class ContactView(generics.CreateAPIView):
         return render(request, self.template_name)
 
 
+# class CheckoutView(generics.CreateAPIView):
+#     serializer_class = CheckoutSerializer
+#     renderer_classes = [TemplateHTMLRenderer]
+#     template_name = "checkout.html"
+
+#     def get(self, request, *args, **kwargs):
+#         if "username" not in request.session:
+#             return redirect("login")
+#         serializer = CheckoutSerializer()
+#         return render(request, self.template_name, {"serializer": serializer})
+
+#     def post(self, request, *args, **kwargs):
+#         serializer = CheckoutSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return redirect("index")
+#         return render(request, self.template_name, {"serializer": serializer})
+
 class CheckoutView(generics.CreateAPIView):
-    serializer_class = CheckoutSerializer
+    serializer_class = CartItemSerializer
     renderer_classes = [TemplateHTMLRenderer]
     template_name = "checkout.html"
 
     def get(self, request, *args, **kwargs):
+        
         if "username" not in request.session:
             return redirect("login")
-        serializer = CheckoutSerializer()
-        return render(request, self.template_name, {"serializer": serializer})
+        
+        user = User.objects.get(username=request.session["username"])
+        cart_items = Cart.objects.filter(person=user)
+
+        
+        cart_items = Cart.objects.filter(person=user)
+        
+        cart_data = []
+        cart_total = 0
+        for item in cart_items:
+            total_price = item.product_quantity * item.product.product_price
+            cart_total += total_price
+            cart_data.append({
+                'product': item.product,
+                'product_quantity': item.product_quantity,
+                'product_price': item.product.product_price,
+                'total_price': total_price
+            })
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "cart_items": cart_data,
+                "cart_total": cart_total,
+            },
+        )
 
     def post(self, request, *args, **kwargs):
-        serializer = CheckoutSerializer(data=request.data)
+        serializer = CartItemSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return redirect("index") 
+            return redirect("index")
         return render(request, self.template_name, {"serializer": serializer})
-    
 def testimonial(request):
     return render(request, "testimonial.html")
 

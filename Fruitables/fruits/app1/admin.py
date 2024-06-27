@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Product, Contact, Cart, Checkout
+from .models import User, Product, Contact, Cart, Checkout, Reply
 
 
 class PersonAdmin(admin.ModelAdmin):
@@ -23,11 +23,9 @@ class ProductAdmin(admin.ModelAdmin):
         "product_details",
         "product_id",
         "product_category",
-        "product_description"
+        "product_description",
     )
     search_fields = ("product_name",)
-
-
 
 
 admin.site.register(Product, ProductAdmin)
@@ -52,3 +50,10 @@ class CheckoutAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Checkout, CheckoutAdmin)
+
+
+class ReplyAdmin(admin.ModelAdmin):
+    list_display = ("name", "review", "rating", "created_at")
+
+
+admin.site.register(Reply, ReplyAdmin)

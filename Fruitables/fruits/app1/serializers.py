@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
-from .models import User, Contact, Product, Checkout, Cart
+from .models import User, Contact, Product, Checkout, Cart, Reply
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -142,7 +142,19 @@ class CheckoutSerializer(serializers.ModelSerializer):
         model = Checkout
         fields = "__all__"
 
+
 class CartItemSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source="product.name")
+    product_price = serializers.DecimalField(
+        source="product.price", max_digits=10, decimal_places=2
+    )
+
     class Meta:
         model = Cart
+        fields = ["product_name", "product_price", "product_quantity"]
+
+
+class ReplySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reply
         fields = "__all__"
