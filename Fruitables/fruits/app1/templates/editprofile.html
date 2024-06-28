@@ -6,7 +6,7 @@
 
     <head>
         <meta charset="utf-8">
-        <title>Fruitables - Cart</title>
+        <title>Fruitables - Profile </title>
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <meta content="" name="keywords">
         <meta content="" name="description">
@@ -31,6 +31,7 @@
 
         <!-- Template Stylesheet -->
         <link rel="stylesheet" href="{% static 'style.css' %}" />
+        
     </head>
 
     <body>
@@ -72,7 +73,7 @@
                                 <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
                                 <div class="dropdown-menu m-0 bg-secondary rounded-0">
                                     <a  href="{% url 'cart' %}" class="dropdown-item ">Cart</a>
-                                    <a  href="{% url 'checkout' %}" class="dropdown-item">checkout</a>
+                                    <a  href="{% url 'checkout' %}" class="dropdown-item">Chackout</a>
                                     <a  href="{% url 'testimonial' %}" class="dropdown-item">Testimonial</a>
                                     <a  href="{% url '404' %}" class="dropdown-item">404 Page</a>
                                 </div>
@@ -80,12 +81,12 @@
                             <a href="{% url 'contact' %}" class="nav-item nav-link">Contact</a>
                         </div>
                         <div class="d-flex m-3 me-0">
-                            {% comment %} <button class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search text-primary"></i></button> {% endcomment %}
-                            <a href="{% url "cart" %}" class="position-relative me-4 my-auto">
+                            <button class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search text-primary"></i></button>
+                            <a href="#" class="position-relative me-4 my-auto">
                                 <i class="fa fa-shopping-bag fa-2x"></i>
                                 <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px;">3</span>
                             </a>
-                            <a href="{% url 'profile' %}" class="my-auto">
+                            <a href="#" class="my-auto">
                                 <i class="fas fa-user fa-2x"></i>
                             </a>
                         </div>
@@ -96,7 +97,7 @@
         <!-- Navbar End -->
 
 
-        <!-- Modal Search Start -->
+        <!-- Search Modal -->
         <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content rounded-0">
@@ -105,128 +106,78 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body d-flex align-items-center">
-                        <div class="input-group w-75 mx-auto d-flex">
-                            <input type="search" class="form-control p-3" placeholder="keywords" aria-describedby="search-icon-1">
-                            <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
-                        </div>
+                        <form class="input-group w-75 mx-auto d-flex" method="get" action="{% url 'index' %}">
+                            <input type="search" name="q" class="form-control p-3" placeholder="keywords" aria-describedby="search-icon-1">
+                            <input type="number" name="min_price" class="form-control p-3" placeholder="Min Price">
+                            <input type="number" name="max_price" class="form-control p-3" placeholder="Max Price">
+                            <button class="input-group-text p-3" type="submit" id="search-icon-1"><i class="fa fa-search"></i></button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
         <!-- Modal Search End -->
-
-
+            
         <!-- Single Page Header start -->
         <div class="container-fluid page-header py-5">
-            <h1 class="text-center text-white display-6">Cart</h1>
+            <h1 class="text-center text-white display-6">Your profile</h1>
             <ol class="breadcrumb justify-content-center mb-0">
                 <li class="breadcrumb-item"><a href="{% url "index" %}">Home</a></li>
                 <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                <li class="breadcrumb-item active text-white">Cart</li>
+                <li class="breadcrumb-item active text-white">Profile</li>
             </ol>
         </div>
         <!-- Single Page Header End -->
 
 
-        <!-- Cart Page Start -->
-        <div class="container-fluid py-5">
-            <div class="container py-5">
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                          <tr>
-                            <th scope="col">Products</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Price</th>
-                            <th scope="col">Quantity</th>
-                            <th scope="col">Total</th>
-                            <th scope="col">Handle</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in cart_items %}
-                            <tr>
-                                <th scope="row">
-                                    <div class="d-flex align-items-center">
-                                        <img src="{{ item.product.product_img.url }}" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="">
-                                    </div>
-                                </th>
-                                <td>
-                                    <p class="mb-0 mt-4">{{ item.product.product_name }}</p>
-                                </td>
-                                <td>
-                                    <p class="mb-0 mt-4">₹{{ item.product.product_price }}</p>
-                                </td>
-                                <td>
-                                    <div class="input-group quantity mt-4" style="width: 100px;">
-                                        <div class="input-group-btn">
-                                            <button class="btn btn-sm btn-minus rounded-circle bg-light border" >
-                                            <i class="fa fa-minus"></i>
-                                            </button>
-                                        </div>
-                                        <input type="text" class="form-control form-control-sm text-center border-0" value="{{ item.product_quantity }}">
-                                        <div class="input-group-btn">
-                                            <button class="btn btn-sm btn-plus rounded-circle bg-light border">
-                                                <i class="fa fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <p class="mb-0 mt-4">₹{{ item.total_price }}</p>
-                                </td>
-                                <td>
-                                    <form method="post" action="{% url 'remove_cart' item.product.product_id %}">
-                                        {% csrf_token %}
-                                        <button class="btn btn-md rounded-circle bg-light border mt-4" type="submit">
-                                            <i class="fa fa-times text-danger"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
+        <!-- 404 Start -->
+        <div class="container-fluid py-5"> 
+            {% for x in person_details %}
+            <div class="profile-container">
+                <div class="profile-picture">
+                    <img src="{% static 'img/user.jpg' %}" height="210px" width="210px" alt="" />
+                    <h3 style="margin: 50px;">{{ x.username }}</h3>
+                </div>
+            
+                <div class="profile-details">
+                    {% if messages %}
+                    <div class="messages">
+                        <ul>
+                            {% for message in messages %}
+                            <li {% if message.tags %} class="{{ message.tags }}" style="margin-left:170px; color:green;" {% endif %}>{{ message }}</li>
                             {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-5">
-                    <input type="text" class="border-0 border-bottom rounded me-5 py-3 mb-4" placeholder="Coupon Code">
-                    <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="button">Apply Coupon</button>
-                </div>
-                <div class="row g-4 justify-content-end">
-                    <div class="col-8"></div>
-                    <div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
-                        <div class="bg-light rounded">
-                            <div class="p-4">
-                                <h1 class="display-6 mb-4">Cart <span class="fw-normal">Total</span></h1>
-                                <div class="d-flex justify-content-between mb-4">
-                                    <h5 class="mb-0 me-4">Subtotal:</h5>
-                                    <p class="mb-0">₹{{ cart_subtotal }}</p>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <h5 class="mb-0 me-4">Shipping</h5>
-                                    <div class="">
-                                        <p class="mb-0">Flat rate: ₹{{ shipping_cost }}</p>
-                                    </div>
-                                </div>
-                                <p class="mb-0 text-end">Shipping to india.</p>
-                            </div>
-                            <form method="post" action="{% url 'checkout' %}">
-                                {% csrf_token %}
-                                <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
-                                    <h5 class="mb-0 ps-4 me-4">Total</h5>
-                                    <p class="mb-0 pe-4">₹{{ cart_total }}</p>
-                                </div>
-                                <button class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="submit">Proceed Checkout</button>
-                            </form>
-                        </div>
+                        </ul>
                     </div>
+                    {% endif %}
+                    <form method="post" action="{% url 'edit' %}">
+                        {% csrf_token %}
+                        <table class="profile-table">
+                            <tr>
+                                <td><strong>Full Name:</strong></td>
+                                <td><input type="text" name="fullname" value="{{ x.fullname }}" required></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Phone:</strong></td>
+                                <td><input type="text" name="phone_number" value="{{ x.phone_number }}" maxlength="10" required></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Email:</strong></td>
+                                <td><input type="email" name="email" value="{{ x.email }}" required></td>
+                            </tr>
+                        </table>
+                        <div class="button-container">
+                            <div class="input-box button1">
+                                <input type="submit" value="Update" />
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        
-        <!-- Cart Page End -->
+        <!-- 404 End -->
 
-
+    
         <!-- Footer Start -->
         <div class="container-fluid bg-dark text-white-50 footer pt-5 mt-5">
             <div class="container py-5">
@@ -303,8 +254,8 @@
 
 
 
-        <!-- Back to Top -->
-        <a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>   
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>   
 
         
     <!-- JavaScript Libraries -->

@@ -80,12 +80,12 @@
                             <a href="{% url 'contact' %}" class="nav-item nav-link">Contact</a>
                         </div>
                         <div class="d-flex m-3 me-0">
-                            <button class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search text-primary"></i></button>
+                            {% comment %} <button class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search text-primary"></i></button> {% endcomment %}
                             <a href="{% url 'cart' %}" class="position-relative me-4 my-auto">
                                 <i class="fa fa-shopping-bag fa-2x"></i>
                                 <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px;">3</span>
                             </a>
-                            <a href="#" class="my-auto">
+                            <a href="{% url "profile" %}" class="my-auto">
                                 <i class="fas fa-user fa-2x"></i>
                             </a>
                         </div>
@@ -96,7 +96,7 @@
         <!-- Navbar End -->
 
 
-        <!-- Search Modal -->
+        <!-- Modal Search Start -->
         <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content rounded-0">
@@ -105,12 +105,10 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body d-flex align-items-center">
-                        <form class="input-group w-75 mx-auto d-flex" method="get" action="{% url 'index' %}">
-                            <input type="search" name="q" class="form-control p-3" placeholder="keywords" aria-describedby="search-icon-1">
-                            <input type="number" name="min_price" class="form-control p-3" placeholder="Min Price">
-                            <input type="number" name="max_price" class="form-control p-3" placeholder="Max Price">
-                            <button class="input-group-text p-3" type="submit" id="search-icon-1"><i class="fa fa-search"></i></button>
-                        </form>
+                        <div class="input-group w-75 mx-auto d-flex">
+                            <input type="search" class="form-control p-3" placeholder="keywords" aria-describedby="search-icon-1">
+                            <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -134,7 +132,7 @@
         <div class="container-fluid py-5">
             <div class="container py-5">
                 <h1 class="mb-4">Billing details</h1>
-                <form  method="post">
+                <form action="{% url 'checkout' %}" method="post">
                     {% csrf_token %}
                     <div class="row g-5">
                         <div class="col-md-12 col-lg-6 col-xl-7">
@@ -200,19 +198,39 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for item in cart_items %}
                                         <tr>
                                             <th scope="row">
                                                 <div class="d-flex align-items-center mt-2">
-                                                    <img src="{{ item.product.image.url }}" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="">
+                                                    <img src="img/vegetable-item-2.jpg" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="">
                                                 </div>
                                             </th>
-                                            <td class="py-5">{{ item.product.product_name }}</td>
-                                            <td class="py-5">${{ item.product_price }}</td>
-                                            <td class="py-5">{{ item.product_quantity }}</td>
-                                            <td class="py-5">${{ item.total_price }}</td>
+                                            <td class="py-5">Awesome Broccoli</td>
+                                            <td class="py-5">$69.00</td>
+                                            <td class="py-5">2</td>
+                                            <td class="py-5">$138.00</td>
                                         </tr>
-                                        {% endfor %}
+                                        <tr>
+                                            <th scope="row">
+                                                <div class="d-flex align-items-center mt-2">
+                                                    <img src="img/vegetable-item-5.jpg" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="">
+                                                </div>
+                                            </th>
+                                            <td class="py-5">Potatoes</td>
+                                            <td class="py-5">$69.00</td>
+                                            <td class="py-5">2</td>
+                                            <td class="py-5">$138.00</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                <div class="d-flex align-items-center mt-2">
+                                                    <img src="img/vegetable-item-3.png" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="">
+                                                </div>
+                                            </th>
+                                            <td class="py-5">Big Banana</td>
+                                            <td class="py-5">$69.00</td>
+                                            <td class="py-5">2</td>
+                                            <td class="py-5">$138.00</td>
+                                        </tr>
                                         <tr>
                                             <th scope="row"></th>
                                             <td class="py-5"></td>
@@ -222,7 +240,7 @@
                                             </td>
                                             <td class="py-5">
                                                 <div class="py-3 border-bottom border-top">
-                                                    <p class="mb-0 text-dark">${{ cart_total }}</p>
+                                                    <p class="mb-0 text-dark">$414.00</p>
                                                 </div>
                                             </td>
                                         </tr>
@@ -255,14 +273,50 @@
                                             <td class="py-5"></td>
                                             <td class="py-5">
                                                 <div class="py-3 border-bottom border-top">
-                                                    <p class="mb-0 text-dark">${{ cart_total }}</p>
+                                                    <p class="mb-0 text-dark">$135.00</p>
                                                 </div>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
-                        </div> 
+                            <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
+                                <div class="col-12">
+                                    <div class="form-check text-start my-3">
+                                        <input type="checkbox" class="form-check-input bg-primary border-0" id="Transfer-1" name="direct_bank_transfer" value="True">
+                                        <label class="form-check-label" for="Transfer-1">Direct Bank Transfer</label>
+                                    </div>
+                                    <p class="text-start text-dark">Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</p>
+                                </div>
+                            </div>
+                            <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
+                                <div class="col-12">
+                                    <div class="form-check text-start my-3">
+                                        <input type="checkbox" class="form-check-input bg-primary border-0" id="Payments-1" name="check_payments" value="True">
+                                        <label class="form-check-label" for="Payments-1">Check Payments</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
+                                <div class="col-12">
+                                    <div class="form-check text-start my-3">
+                                        <input type="checkbox" class="form-check-input bg-primary border-0" id="Delivery-1" name="cash_on_delivery" value="True">
+                                        <label class="form-check-label" for="Delivery-1">Cash On Delivery</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
+                                <div class="col-12">
+                                    <div class="form-check text-start my-3">
+                                        <input type="checkbox" class="form-check-input bg-primary border-0" id="Paypal-1" name="paypal" value="True">
+                                        <label class="form-check-label" for="Paypal-1">Paypal</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-4 text-center align-items-center justify-content-center pt-4">
+                                <button type="submit" class="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary">Place Order</button>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
