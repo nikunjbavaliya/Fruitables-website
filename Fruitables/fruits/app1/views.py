@@ -12,11 +12,11 @@ from .serializers import (
     OtpSerializer,
     ContactSerializer,
     ProductSerializer,
-    CheckoutSerializer,
     ReplySerializer,
     CartItemSerializer,
+    EditprofileSerializer,
 )
-from .models import Product, CategoryChoices, Cart, User,Reply
+from .models import Product, CategoryChoices, Cart, User, Reply
 from typing import Union
 from rest_framework.request import Request
 from django.http.request import HttpRequest
@@ -24,6 +24,7 @@ import random
 from django.db.models import Sum, Count, Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
+from rest_framework.views import APIView
 
 
 class RegisterView(generics.CreateAPIView):
@@ -76,8 +77,8 @@ class IndexView(generics.CreateAPIView):
         query = request.GET.get("q")
         min_price = request.GET.get("min_price")
         max_price = request.GET.get("max_price")
-        
-        reply = Reply.objects.all()         
+
+        reply = Reply.objects.all()
 
         products = Product.objects.all()
 
@@ -103,7 +104,7 @@ class IndexView(generics.CreateAPIView):
                 "veg": veg,
                 "fruits": fruits,
                 "singal_fruit": singal_fruit,
-                "reply":reply,
+                "reply": reply,
             },
         )
 
@@ -200,8 +201,12 @@ class ShopView(generics.CreateAPIView):
         fruits_serialized = ProductSerializer(fruits, many=True)
         veg_serialized = ProductSerializer(veg, many=True)
 
-        singal_fruit = Product.objects.filter(product_category=CategoryChoices.FRUITS)[:3]
-        singal_veg = Product.objects.filter(product_category=CategoryChoices.VEGETABLES).first()
+        singal_fruit = Product.objects.filter(product_category=CategoryChoices.FRUITS)[
+            :3
+        ]
+        singal_veg = Product.objects.filter(
+            product_category=CategoryChoices.VEGETABLES
+        ).first()
 
         return render(
             request,
@@ -329,7 +334,7 @@ class RemoveFromCartView(LoginRequiredMixin, View):
 
 class ProdcutdetailView(generics.CreateAPIView):
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = "shop-detail.html"
+    template_name = "shop_detail.html"
 
     def get(self, request, product_id):
         if "username" not in request.session:
@@ -342,8 +347,8 @@ class ProdcutdetailView(generics.CreateAPIView):
         singal_fruit = Product.objects.filter(product_category=CategoryChoices.FRUITS)[
             7:
         ]
-        
-        reply = Reply.objects.all()         
+
+        reply = Reply.objects.all()
         fruits = Product.objects.filter(product_category=CategoryChoices.FRUITS)
         veg = Product.objects.filter(product_category=CategoryChoices.VEGETABLES)
         min_price = request.POST.get("min_price", 0)
@@ -361,16 +366,22 @@ class ProdcutdetailView(generics.CreateAPIView):
 
         return render(
             request,
-            "shop-detail.html",
-            {"product_details": product, "veg": veg, "singal_fruit": singal_fruit, "fruit_stock_counts":fruit_stock_counts, "reply":reply},
+            "shop_detail.html",
+            {
+                "product_details": product,
+                "veg": veg,
+                "singal_fruit": singal_fruit,
+                "fruit_stock_counts": fruit_stock_counts,
+                "reply": reply,
+            },
         )
 
     def post(self, request, *args, **kwargs):
         serializer = ReplySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return redirect('index')  
-        return render(request, self.template_name, {'serializer': serializer})
+            return redirect("index")
+        return render(request, self.template_name, {"serializer": serializer})
 
 
 class ContactView(generics.CreateAPIView):
@@ -410,33 +421,35 @@ class ContactView(generics.CreateAPIView):
 #             return redirect("index")
 #         return render(request, self.template_name, {"serializer": serializer})
 
+
 class CheckoutView(generics.CreateAPIView):
     serializer_class = CartItemSerializer
     renderer_classes = [TemplateHTMLRenderer]
     template_name = "checkout.html"
 
     def get(self, request, *args, **kwargs):
-        
+
         if "username" not in request.session:
             return redirect("login")
-        
+
         user = User.objects.get(username=request.session["username"])
         cart_items = Cart.objects.filter(person=user)
 
-        
         cart_items = Cart.objects.filter(person=user)
-        
+
         cart_data = []
         cart_total = 0
         for item in cart_items:
             total_price = item.product_quantity * item.product.product_price
             cart_total += total_price
-            cart_data.append({
-                'product': item.product,
-                'product_quantity': item.product_quantity,
-                'product_price': item.product.product_price,
-                'total_price': total_price
-            })
+            cart_data.append(
+                {
+                    "product": item.product,
+                    "product_quantity": item.product_quantity,
+                    "product_price": item.product.product_price,
+                    "total_price": total_price,
+                }
+            )
 
         return render(
             request,
@@ -453,6 +466,41 @@ class CheckoutView(generics.CreateAPIView):
             serializer.save()
             return redirect("index")
         return render(request, self.template_name, {"serializer": serializer})
+
+
+class ProfileView(generics.CreateAPIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "profile.html"
+
+    def get(self, request: Union[Request, HttpRequest]) -> render:
+        if "username" not in request.session:
+            return redirect("login")
+        username = request.session.get("username")
+        person_details = User.objects.filter(username=username)
+        return render(request, self.template_name, context={"details": person_details})
+
+class EditprofileView(generics.CreateAPIView):
+    renderer_classes= [TemplateHTMLRenderer]
+    template_name = "editprofile.html"
+    serializer_class = EditprofileSerializer
+
+    def get(self, request: Union[Request, HttpRequest]) -> Union[render, redirect]:
+        if "username" not in request.session:
+            return redirect("login")
+        username = request.session.get("username")
+        person_details = User.objects.filter(username=username)
+        return render(request, self.template_name, context={"person_details": person_details})
+
+    def post(self, request: Union[Request, HttpRequest]) -> redirect:
+        username = request.session.get("username")
+        serializer = EditprofileSerializer(
+            data=request.data, context={"user_id": username}
+        )
+        if serializer.is_valid():
+            return redirect("profile")
+        messages.error(request, serializer.errors["non_field_errors"][0])
+        return redirect("edit")
+
 def testimonial(request):
     return render(request, "testimonial.html")
 

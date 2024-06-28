@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from .models import User, Contact, Product, Checkout, Cart, Reply
+import re
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -151,10 +152,36 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = ["product_name", "product_price", "product_quantity"]
+        fields = ("product_name", "product_price", "product_quantity")
 
 
 class ReplySerializer(serializers.ModelSerializer):
     class Meta:
         model = Reply
         fields = "__all__"
+
+class EditprofileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("fullname", "phone_number")
+
+    def validate(self, data):
+        username = self.context.get("user_id")
+        fullname = data.get("fullname")
+        phone_number = data.get("phone_number")
+
+        # Check if phone_number contains only digits
+        if not phone_number.isdigit():
+            raise ValidationError("Please enter only numbers for the phone number.")
+
+        # Check if phone_number length is 10 digits
+        if len(phone_number) != 10:
+            raise ValidationError("Enter a 10 digit phone number.")
+
+        # Update the user's profile if exists
+        person_details = User.objects.filter(username=username).first()
+        if person_details:
+            person_details.fullname = fullname
+            person_details.phone_number = phone_number
+            person_details.save()
+        return data

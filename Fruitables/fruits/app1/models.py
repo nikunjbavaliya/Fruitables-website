@@ -80,7 +80,6 @@ class Reply(models.Model):
     review = models.TextField(max_length=500)
     rating = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
-    product = models.ForeignKey(Product, related_name="replies", on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.name}"

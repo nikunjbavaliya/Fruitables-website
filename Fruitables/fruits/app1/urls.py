@@ -13,7 +13,9 @@ from .views import (
     CartView,
     RemoveFromCartView,
     CheckoutView,
-)   
+    ProfileView,
+    EditprofileView
+)
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -37,6 +39,9 @@ urlpatterns = [
     ),
     path("checkout/", CheckoutView.as_view(), name="checkout"),
     path("contact/", ContactView.as_view(), name="contact"),
+    path("profile/", ProfileView.as_view(), name= "profile"),
+    path("edit/", EditprofileView.as_view(), name="edit"),
+
     #####################################################
 
     path("404/", views.error, name="404"),
